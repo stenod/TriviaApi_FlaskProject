@@ -78,13 +78,14 @@ def create_app(test_config=None):
         if len(current_questions) == 0:
             abort(404)
 
-        categories = db.session.query(Category.type).all()
+        categories = Category.query.all()
+        formatted_category = {category.id: category.type for category in categories}
 
         # formatted_questions = [question.format() for question in current_questions]
         return jsonify({'success': True,
                         'questions': current_questions,
                         'total_questions': len(current_questions),
-                        'categories': categories})
+                        'categories': formatted_category})
 
     '''
   @TODO: 
@@ -201,7 +202,7 @@ def create_app(test_config=None):
         return jsonify({'success': True,
                         'questions': current_questions,
                         'total_questions': len(current_questions),
-                        'currentCategory': category})
+                        'currentCategory': Category.format(category)})
 
 
 
