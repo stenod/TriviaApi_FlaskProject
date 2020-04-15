@@ -134,7 +134,8 @@ def create_app(test_config=None):
         new_question = body.get('question', None)
         new_answer = body.get('answer', None)
         new_category = body.get('category', None)
-        search = body.get('search', None)
+        new_difficulty = body.get('difficulty', None)
+        search = body.get('searchTerm', None)
 
         try:
             if search:
@@ -149,7 +150,10 @@ def create_app(test_config=None):
                     'total_questions': len(current_question)
                 })
             else:
-                question = Question(question=new_question, answer=new_answer, category=new_category)
+                if new_question is None or new_answer is None or new_category is None or new_difficulty is None:
+                    abort(404)
+
+                question = Question(question=new_question, answer=new_answer, category=new_category, difficulty=new_difficulty)
                 question.insert()
 
                 selection = Question.query.order_by(Question.id).all()
