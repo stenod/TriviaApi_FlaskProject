@@ -1,5 +1,17 @@
 # Full Stack Trivia API  Frontend
 
+Project Title
+
+Description of project and motivation
+Screenshots (if applicable), with captions
+Code Style if you are following particular style guides
+
+## Introduction
+
+This project is a virtual bookshelf for Udacity students. Students are able to add their books to the bookshelf, give them a rating, update the rating and search through their book lists. As a part of the Fullstack Nanodegree, it serves as a practice module for lessons from Course 2: API Development and Documentation. By completing this project, students learn and apply their skills structuring and implementing well formatted API endpoints that leverage knowledge of HTTP and API development best practices.
+
+All backend code follows PEP8 style guidelines.
+
 ## Getting Setup
 
 > _tip_: this frontend is designed to work with [Flask-based Backend](../backend). It is recommended you stand up the backend first, test using Postman or curl, update the endpoints in the frontend, and then the frontend should integrate smoothly.
