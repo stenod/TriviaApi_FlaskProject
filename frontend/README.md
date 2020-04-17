@@ -49,3 +49,20 @@ In addition, you may want to customize and style the frontend by editing the CSS
 Currently, when a user plays the game they play up to five questions of the chosen category. If there are fewer than five questions in a category, the game will end when there are no more questions in that category. 
 
 You can optionally update this game play to increase the number of questions or whatever other game mechanics you decide. Make sure to specify the new mechanics of the game in the README of the repo you submit so the reviewers are aware that the behavior is correct. 
+
+### Error
+Errors are returned as JSON objects in the following format:
+
+```json
+{
+    "success": False, 
+    "error": 400,
+    "message": "bad request"
+}
+```
+
+The API will return three error types when requests fail:
+
+400: Bad Request
+404: Resource Not Found
+422: Not Processable
