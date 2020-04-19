@@ -1,9 +1,5 @@
-import os
 from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS, cross_origin
-import random
-
+from flask_cors import CORS
 from models import setup_db, Question, Category
 from sqlalchemy import func
 
@@ -16,7 +12,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
-    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+    cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
     '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
@@ -73,21 +69,23 @@ def create_app(test_config=None):
 
     @app.route('/questions', methods=['GET'])
     def get_questions():
-        selection = Question.query.all()
-        current_questions = paginate_questions(request, selection)
+        try:
+            selection = Question.query.all()
+            current_questions = paginate_questions(request, selection)
 
-        if len(current_questions) == 0:
-            abort(404)
+            if len(current_questions) == 0:
+                abort(404)
 
-        categories = Category.query.all()
-        formatted_category = {category.id: category.type for category in categories}
+            categories = Category.query.all()
+            formatted_category = {category.id: category.type for category in categories}
 
-        # formatted_questions = [question.format() for question in current_questions]
-        return jsonify({'success': True,
-                        'questions': current_questions,
-                        'total_questions': len(current_questions),
-                        'categories': formatted_category})
-
+            # formatted_questions = [question.format() for question in current_questions]
+            return jsonify({'success': True,
+                            'questions': current_questions,
+                            'total_questions': len(current_questions),
+                            'categories': formatted_category})
+        except:
+            abort(422)
     '''
   @TODO: 
   Create an endpoint to DELETE question using a question ID. 
@@ -154,7 +152,8 @@ def create_app(test_config=None):
                 if new_question is None or new_answer is None or new_category is None or new_difficulty is None:
                     abort(422)
 
-                question = Question(question=new_question, answer=new_answer, category=new_category, difficulty=new_difficulty)
+                question = Question(question=new_question, answer=new_answer, category=new_category,
+                                    difficulty=new_difficulty)
                 question.insert()
 
                 selection = Question.query.order_by(Question.id).all()
@@ -192,19 +191,20 @@ def create_app(test_config=None):
 
     @app.route('/categories/<int:category_id>/questions')
     def get_question_by_category(category_id):
-        question = Question.query.filter(Question.category == str(category_id)).all()
-        current_questions = paginate_questions(request, question)
-        category = Category.query.filter(Category.id == category_id).first()
+        try:
+            question = Question.query.filter(Question.category == str(category_id)).all()
+            current_questions = paginate_questions(request, question)
+            category = Category.query.filter(Category.id == category_id).first()
 
-        if len(current_questions) == 0:
-            abort(404)
+            if len(current_questions) == 0:
+                abort(404)
 
-        return jsonify({'success': True,
-                        'questions': current_questions,
-                        'total_questions': len(current_questions),
-                        'currentCategory': Category.format(category)})
-
-
+            return jsonify({'success': True,
+                            'questions': current_questions,
+                            'total_questions': len(current_questions),
+                            'currentCategory': Category.format(category)})
+        except:
+            abort(422)
 
     '''
   @TODO: 
@@ -232,12 +232,15 @@ def create_app(test_config=None):
         try:
             if len(previous_questions) > 0:
                 if int(category_id) > 0:
-                    question = Question.query.filter(Question.id.notin_(previous_questions), Question.category == category_id).order_by(func.random()).first()
+                    question = Question.query.filter(Question.id.notin_(previous_questions),
+                                                     Question.category == category_id).order_by(func.random()).first()
                 else:
-                    question = Question.query.filter(Question.id.notin_(previous_questions)).order_by(func.random()).first()
+                    question = Question.query.filter(Question.id.notin_(previous_questions)).order_by(
+                        func.random()).first()
             else:
                 if int(category_id) > 0:
-                    question = Question.query.filter(Question.category == str(category_id)).order_by(func.random()).first()
+                    question = Question.query.filter(Question.category == str(category_id)).order_by(
+                        func.random()).first()
                 else:
                     question = Question.query.order_by(func.random()).first()
             if question is None:
