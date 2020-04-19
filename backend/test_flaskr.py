@@ -83,7 +83,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(len(data['categories']), 1)
+        self.assertEqual(len(data['categories']), 6)
 
     def test_get_categories_wrong_method(self):
         """Test _____________ """
@@ -147,7 +147,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertEqual(data['total_questions'], 1)
+        self.assertEqual(data['total_questions'], 2)
         self.assertTrue(data['questions'])
 
     def test_search_question_without_results(self):
@@ -170,12 +170,12 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertEqual(len(data['questions']), 1)
-        self.assertEqual(data['total_questions'], 1)
+        self.assertEqual(len(data['questions']), 5)
+        self.assertEqual(data['total_questions'], 5)
         self.assertEqual(data['currentCategory'], Category.format(category))
 
     def test_get_question_by_category_without_results(self):
-        res = self.client().get('/categories/2/questions')
+        res = self.client().get('/categories/57/questions')
         self.assertEqual(res.status_code, 404)
 
     def test_get_quizzes_with_results(self):
@@ -189,7 +189,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_get_quizzes_with_wrong_category(self):
         category = Category.query.first()
-        category.id = 5
+        category.id = 12
         res = self.client().post('/quizzes',
                                  json={'previous_questions': [], 'quiz_category': Category.format(category)})
         data = json.loads(res.data)
