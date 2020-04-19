@@ -114,7 +114,6 @@ def create_app(test_config=None):
                 'questions': current_questions,
                 'total_questions': len(current_questions)
             })
-
         except:
             abort(422)
 
@@ -153,7 +152,7 @@ def create_app(test_config=None):
                 })
             else:
                 if new_question is None or new_answer is None or new_category is None or new_difficulty is None:
-                    abort(404)
+                    abort(422)
 
                 question = Question(question=new_question, answer=new_answer, category=new_category, difficulty=new_difficulty)
                 question.insert()
@@ -238,7 +237,7 @@ def create_app(test_config=None):
                     question = Question.query.filter(Question.id.notin_(previous_questions)).order_by(func.random()).first()
             else:
                 if int(category_id) > 0:
-                    question = Question.query.filter(Question.category == category_id).order_by(func.random()).first()
+                    question = Question.query.filter(Question.category == str(category_id)).order_by(func.random()).first()
                 else:
                     question = Question.query.order_by(func.random()).first()
             if question is None:
