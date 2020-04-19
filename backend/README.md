@@ -1,5 +1,7 @@
 # Full Stack Trivia API Backend
 
+It is a Webapplication which let you play answering random trivia questions. You are also able to create new questions, search for questions and delete questions. 
+
 ## Getting Started
 
 ### Installing Dependencies
@@ -66,29 +68,221 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+##Endpoints
 
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
+##### GET /categories
+* General:
+Returns all categories from the database
+Sample: curl http://127.0.0.1:5000/categories
 
-GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
-
+```json
+{
+"categories": {
+"1": "Science",
+"2": "Art",
+"3": "Geography",
+"4": "History",
+"5": "Entertainment",
+"6": "Sports"
+},
+"success": true
+}
 ```
 
+#### GET /questions
+
+* General:
+Returns all questions from the database
+curl http://127.0.0.1:5000/questions?page=1 -X
+
+```json
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "questions": [
+    {
+      "answer": "Brazil", 
+      "category": "6", 
+      "difficulty": 3, 
+      "id": 10, 
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    }, 
+    {
+      "answer": "Uruguay", 
+      "category": "6", 
+      "difficulty": 4, 
+      "id": 11, 
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 10
+}
+
+```
+
+#### DELETE /questions/{question_id}
+* General:
+Deletes the question of the given ID if it exists. Returns the id of the deleted question, success value, total questions, and question list based on current page number to update the frontend.
+```commandline
+curl -X DELETE http://127.0.0.1:5000/questions/16?page=2
+```
+
+```json
+{
+"questions": [
+  {
+    "author": "Kiese Laymon",
+    "id": 12,
+    "rating": 1,
+    "title": "Heavy: An American Memoir"
+  },
+  {
+    "author": "Emily Giffin",
+    "id": 13,
+    "rating": 4,
+    "title": "All We Ever Wanted"
+  },
+  {
+    "author": "Jose Andres",
+    "id": 14,
+    "rating": 4,
+    "title": "We Fed an Island"
+  },
+  {
+    "author": "Rachel Kushner",
+    "id": 15,
+    "rating": 1,
+    "title": "The Mars Room"
+  }
+],
+"deleted": 16,
+"success": true,
+"total_questions": 15
+}
+```
+
+#### POST /questions
+* General:
+Creates a new question in the database
+
+Request:
+```commandline
+curl http://127.0.0.1:5000/questions?page=3 -X POST -H "Content-Type: application/json" -d '{"question":  "What?","answer":  "Yes","difficulty":  5,"category":  "3"}'
+```
+Response:
+```json
+{
+  "id": 102,
+  "questions": [
+    {
+      "answer": "Alexander Fleming",
+      "category": "1",
+      "difficulty": 3,
+      "id": 21,
+      "question": "Who discovered penicillin?"
+    },
+    {
+      "answer": "ein Schwein",
+      "category": "2",
+      "difficulty": 3,
+      "id": 24,
+      "question": "Was bist du"
+    },
+    {
+      "answer": "Yes",
+      "category": "3",
+      "difficulty": 5,
+      "id": 101,
+      "question": "What?"
+    },
+    {
+      "answer": "Yes",
+      "category": "3",
+      "difficulty": 5,
+      "id": 102,
+      "question": "What?"
+    }
+  ],
+  "search": null,
+  "success": true,
+  "total_questions": 16
+}
+```
+
+#### GET /categories/{categie_id}/questions
+* General:
+Gets all questions for a given category
+
+Request:
+```commandline
+curl http://127.0.0.1:5000/categories/1/questions
+```
+Response:
+```json
+{
+"currentCategory": {
+"id": 1,
+"type": "Science"
+},
+"questions": [
+{
+"answer": "The Liver",
+"category": "1",
+"difficulty": 4,
+"id": 20,
+"question": "What is the heaviest organ in the human body?"
+},
+{
+"answer": "Alexander Fleming",
+"category": "1",
+"difficulty": 3,
+"id": 21,
+"question": "Who discovered penicillin?"
+},
+{
+"answer": "Blood",
+"category": "1",
+"difficulty": 4,
+"id": 22,
+"question": "Hematology is a branch of medicine involving the study of what?"
+}
+],
+"success": true,
+"total_questions": 3
+}
+```
+
+
+#### POST /quizzes
+* General:
+Gets a random question for one category
+Request:
+```commandline
+curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [],"answer":  "Yes","quiz_category": {"id": "1","type": "Science"}}'
+```
+Response:
+```json
+{
+  "previous_questions": [
+    20
+  ],
+  "question": {
+    "answer": "The Liver",
+    "category": "1",
+    "difficulty": 4,
+    "id": 20,
+    "question": "What is the heaviest organ in the human body?"
+  },
+  "success": true
+}
+```
 
 ## Testing
 To run the tests, run
