@@ -5,6 +5,7 @@ from flask_cors import CORS, cross_origin
 import random
 
 from models import setup_db, Question, Category
+from sqlalchemy import func
 
 from backend.models import db
 
@@ -218,10 +219,73 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
 
+    @app.route('/quizzes', methods=['POST'])
+    def get_quizzes():
+        body = request.get_json()
+
+        previous_questions = body.get('previous_questions', None)
+        quiz_category = body.get('quiz_category', None)
+        category_id = quiz_category.get('id', None)
+
+        if previous_questions is None or quiz_category is None:
+            abort(404)
+
+        try:
+            if len(previous_questions) > 0:
+                if int(category_id) > 0:
+                    question = Question.query.filter(Question.id.notin_(previous_questions), Question.category == category_id).order_by(func.random()).first()
+                else:
+                    question = Question.query.filter(Question.id.notin_(previous_questions)).order_by(func.random()).first()
+            else:
+                if int(category_id) > 0:
+                    question = Question.query.filter(Question.category == category_id).order_by(func.random()).first()
+                else:
+                    question = Question.query.order_by(func.random()).first()
+            if question is None:
+                abort(422)
+            previous_questions.append(question.id)
+            return jsonify({'success': True,
+                            'question': Question.format(question),
+                            'previous_questions': previous_questions})
+        except:
+            abort(422)
+
     '''
   @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 404,
+            'message': 'Not found'
+        }), 404
+
+    @app.errorhandler(422)
+    def not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 422,
+            'message': 'Unprocessable Entity'
+        }), 422
+
+    @app.errorhandler(400)
+    def not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 400,
+            'message': 'Bad Request'
+        }), 400
+
+    @app.errorhandler(405)
+    def not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 405,
+            'message': 'Method not allowed'
+        }), 405
 
     return app
